@@ -22,7 +22,7 @@ public class ECDH {
 	/**
 	 * Exchange
 	 */
-	private Point receivedPoint;
+	private PublicKey receivedKey;
 
 	public ECDH() {
 		BigInteger p = new BigInteger("8884933102832021670310856601112383279507496491807071433260928721853918699951");
@@ -40,18 +40,33 @@ public class ECDH {
 
 		SecureRandom randomGenerator = new SecureRandom();
 		d = new BigInteger(256, randomGenerator);
-		receivedPoint = null;
+		receivedKey = null;
 	}
 
-	public Point getPointToExchange() {
+	public ECDH(PublicKey key) {
+		corps = key.corps;
+		P = key.P;
+
+		SecureRandom randomGenerator = new SecureRandom();
+		d = new BigInteger(256, randomGenerator);
+		receivedKey = key;
+	}
+	
+	private Point getPublicPoint(){
 		return corps.mutiply(d, P);
 	}
 
-	public void setReceivedPoint(Point r) {
-		receivedPoint = r;
+	public PublicKey getPublicKey() {
+		return new PublicKey(P, corps, getPublicPoint());
+	}
+
+	public void setReceivedKey(PublicKey key) throws Exception {
+		if (!corps.equals(key.corps) || !P.equals(key.P))
+			throw new Exception("Wrong curve parameters");
+		receivedKey = key;
 	}
 
 	public Point getCommonSecret() {
-		return corps.mutiply(d, receivedPoint);
+		return corps.mutiply(d, receivedKey.key);
 	}
 }

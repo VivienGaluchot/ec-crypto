@@ -3,9 +3,9 @@ package eccrypto.math;
 import java.math.BigInteger;
 
 public class Corps {
-	BigInteger p;
-	BigInteger n;
-	EllipticCurve curve;
+	private BigInteger p;
+	private BigInteger n;
+	private EllipticCurve curve;
 
 	private static BigInteger TWO = new BigInteger("2");
 	private static BigInteger THREE = new BigInteger("3");
@@ -103,5 +103,14 @@ public class Corps {
 		B = B.mod(p);
 
 		return A.equals(B);
+	}
+	
+	@Override
+	public boolean equals(Object o){
+		if(!(o instanceof Corps))
+			return false;
+		Corps C = (Corps) o;
+		return p.equals(C.p) && curve.equals(C.curve);
+		
 	}
 }

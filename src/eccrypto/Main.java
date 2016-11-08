@@ -3,6 +3,7 @@ package eccrypto;
 import java.math.BigInteger;
 
 import eccrypto.ecdh.ECDH;
+import eccrypto.ecdh.PublicKey;
 import eccrypto.math.Corps;
 import eccrypto.math.EllipticCurve;
 import eccrypto.math.Point;
@@ -63,19 +64,37 @@ public class Main {
 
 		System.out.println("\n --- ECDH --- ");
 		ECDH alice = new ECDH();
-		Point pa = alice.getPointToExchange();
-		System.out.println("Alice point : \n" + pa);
+		PublicKey pa = alice.getPublicKey();
+		System.out.println("Alice key : \n" + pa);
 
 		ECDH bob = new ECDH();
-		Point pb = bob.getPointToExchange();
-		System.out.println("Bob point : \n" + pb);
+		PublicKey pb = bob.getPublicKey();
+		System.out.println("Bob key : \n" + pb);
 
-		alice.setReceivedPoint(pb);
-		bob.setReceivedPoint(pa);
+		try {
+			alice.setReceivedKey(pb);
+			bob.setReceivedKey(pa);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		System.out.println("Alice secret : \n" + alice.getCommonSecret());
 		System.out.println("Bob secret : \n" + bob.getCommonSecret());
-		System.out.println("equals bob secret ? \t" + alice.getCommonSecret().equals(bob.getCommonSecret()));
+		System.out.println("equals alice secret ? \t" + alice.getCommonSecret().equals(bob.getCommonSecret()));
+
+		System.out.println("Bob2 in passive mode");
+		ECDH bob2 = new ECDH(pa);
+		PublicKey pb2 = bob2.getPublicKey();
+		System.out.println("Bob2 key : \n" + pb2);
+		
+		try {
+			alice.setReceivedKey(pb2);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		System.out.println("Bob2 secret : \n" + bob.getCommonSecret());
+		System.out.println("equals alice secret ? \t" + alice.getCommonSecret().equals(bob2.getCommonSecret()));
 	}
 
 }
