@@ -39,6 +39,6 @@ public class Point {
 	public String toString(){
 		if(isInfinit)
 			return "infinite";
-		return "("+x.toString()+","+y.toString()+")";
+		return "x "+x.toString()+"\ny "+y.toString()+"";
 	}
 }

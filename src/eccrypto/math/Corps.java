@@ -4,20 +4,22 @@ import java.math.BigInteger;
 
 public class Corps {
 	BigInteger p;
+	BigInteger n;
 	EllipticCurve curve;
 
 	private static BigInteger TWO = new BigInteger("2");
 	private static BigInteger THREE = new BigInteger("3");
 
-	public Corps(BigInteger p, EllipticCurve curve) {
+	public Corps(BigInteger p, BigInteger n, EllipticCurve curve) {
 		this.p = p;
+		this.n = n;
 		this.curve = curve;
 	}
 
 	public Point oppose(Point point) {
-		if(point.isInfinit)
+		if (point.isInfinit)
 			return point;
-		
+
 		Point res = new Point();
 		// q.x = p.x²
 		res.x = point.x.mod(p);
@@ -33,8 +35,8 @@ public class Corps {
 		} else if (Q.isInfinit) {
 			return P;
 		}
-		
-		if(P.equals(oppose(Q)))
+
+		if (P.equals(oppose(Q)))
 			return new Point(true);
 
 		BigInteger k;
@@ -64,17 +66,19 @@ public class Corps {
 
 	public Point mutiply(BigInteger m, Point p) {
 		Point r = new Point(true);
-		
-		if(m.compareTo(BigInteger.ZERO) < 0){
+
+		if (m.compareTo(BigInteger.ZERO) < 0) {
 			m = m.negate();
 			p = oppose(p);
 		}
+		
+		m = m.mod(n);
 
 		while (m.compareTo(BigInteger.ZERO) > 0) {
-			if(m.mod(TWO).compareTo(BigInteger.ZERO) > 0){
-				r = add(r,p);
+			if (m.mod(TWO).compareTo(BigInteger.ZERO) > 0) {
+				r = add(r, p);
 			}
-			p = add(p,p);
+			p = add(p, p);
 			m = m.shiftRight(1);
 		}
 
@@ -82,9 +86,9 @@ public class Corps {
 	}
 
 	public boolean contain(Point pt) {
-		if(pt.isInfinit)
+		if (pt.isInfinit)
 			return true;
-		
+
 		// A = y^2 + a1.x.y + a3.y
 		BigInteger A = pt.y.pow(2);
 		A = A.add(curve.a1.multiply(pt.x.multiply(pt.y)));
