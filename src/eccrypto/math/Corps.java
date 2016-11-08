@@ -33,6 +33,9 @@ public class Corps {
 		} else if (Q.isInfinit) {
 			return P;
 		}
+		
+		if(P.equals(oppose(Q)))
+			return new Point(true);
 
 		BigInteger k;
 		Point r = new Point();
@@ -61,6 +64,11 @@ public class Corps {
 
 	public Point mutiply(BigInteger m, Point p) {
 		Point r = new Point(true);
+		
+		if(m.compareTo(BigInteger.ZERO) < 0){
+			m = m.negate();
+			p = oppose(p);
+		}
 
 		while (m.compareTo(BigInteger.ZERO) > 0) {
 			if(m.mod(TWO).compareTo(BigInteger.ZERO) > 0){
@@ -74,6 +82,9 @@ public class Corps {
 	}
 
 	public boolean contain(Point pt) {
+		if(pt.isInfinit)
+			return true;
+		
 		// A = y^2 + a1.x.y + a3.y
 		BigInteger A = pt.y.pow(2);
 		A = A.add(curve.a1.multiply(pt.x.multiply(pt.y)));

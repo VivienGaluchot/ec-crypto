@@ -35,4 +35,10 @@ public class Point {
 		else
 			return x.equals(Q.x) && y.equals(Q.y);
 	}
+	
+	public String toString(){
+		if(isInfinit)
+			return "infinite";
+		return "("+x.toString()+","+y.toString()+")";
+	}
 }

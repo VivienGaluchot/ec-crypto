@@ -29,16 +29,33 @@ public class Main {
 		Point g = new Point(
 				new BigInteger("7638166354848741333090176068286311479365713946232310129943505521094105356372"),
 				new BigInteger("762687367051975977761089912701686274060655281117983501949286086861823169994"));
-		System.out.println(corps.contain(g));
-		
-		Point p = corps.add(g, g);
-		System.out.println(corps.contain(p));
-		
-		p = corps.mutiply(new BigInteger("1000"), g);
-		System.out.println(corps.contain(p) + " " + p.x + "\n" + p.y);
-		
+		BigInteger n = new BigInteger("8884933102832021670310856601112383279454437918059397120004264665392731659049");
+		Point inf = new Point(true);
+		Point p = null;
+
+		System.out.println("g is in curve ? : " + corps.contain(g));
+		System.out.println("infini is in curve ? : " + corps.contain(inf));
+
 		p = corps.oppose(g);
-		System.out.println(corps.contain(p));
+		System.out.println("oppose(g) is in curve ? : " + corps.contain(p));
+
+		p = corps.add(g, g);
+		System.out.println("g+g is in curve ? : " + corps.contain(p));
+		p = corps.add(inf, g);
+		System.out.println("ing + g is in curve ? : " + corps.contain(p));
+		p = corps.add(g, inf);
+		System.out.println("g + inf is in curve ? : " + corps.contain(p));
+		p = corps.add(inf, inf);
+		System.out.println("ing + inf is in curve ? : " + corps.contain(p));
+
+		p = corps.mutiply(new BigInteger("10"), g);
+		System.out.println("10*g is in curve ? : " + corps.contain(p));
+		p = corps.mutiply(new BigInteger("10"), inf);
+		System.out.println("10*inf is in curve ? : " + corps.contain(p));
+		p = corps.mutiply(n, g);
+		System.out.println("n*g is in curve ? : " + corps.contain(p));
+		p = corps.mutiply(n, g);
+		System.out.println("n*g == inf ? : " + p.equals(inf));
 	}
 
 }
