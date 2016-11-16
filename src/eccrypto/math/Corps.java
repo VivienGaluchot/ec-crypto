@@ -15,6 +15,10 @@ public class Corps {
 		this.n = n;
 		this.curve = curve;
 	}
+	
+	public BigInteger getP(){
+		return p;
+	}
 
 	public Point oppose(Point point) {
 		if (point.isInfinit)

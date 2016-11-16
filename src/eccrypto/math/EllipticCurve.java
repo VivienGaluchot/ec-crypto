@@ -28,6 +28,5 @@ public class EllipticCurve {
 			return false;
 		EllipticCurve C = (EllipticCurve) o;
 		return a1.equals(C.a1) && a2.equals(C.a2) && a3.equals(C.a3) && a4.equals(C.a4) && a6.equals(C.a6);
-
 	}
 }

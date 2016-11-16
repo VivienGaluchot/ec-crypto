@@ -11,18 +11,18 @@ public class ECDH {
 	/**
 	 * Public parameters for ECDH exchange
 	 */
-	private Corps corps;
-	private Point P;
+	protected Corps corps;
+	protected Point P;
 
 	/**
 	 * Private number
 	 */
-	private BigInteger d;
+	protected BigInteger d;
 
 	/**
 	 * Exchange
 	 */
-	private PublicKey receivedKey;
+	protected DHMessage receivedKey;
 
 	public ECDH() {
 		BigInteger p = new BigInteger("8884933102832021670310856601112383279507496491807071433260928721853918699951");
@@ -33,9 +33,7 @@ public class ECDH {
 		BigInteger gy = new BigInteger("762687367051975977761089912701686274060655281117983501949286086861823169994");
 
 		EllipticCurve curve = new EllipticCurve(new BigInteger("0"), new BigInteger("0"), new BigInteger("0"), a4, a6);
-
 		corps = new Corps(p, n, curve);
-
 		P = new Point(gx, gy);
 
 		SecureRandom randomGenerator = new SecureRandom();
@@ -43,7 +41,7 @@ public class ECDH {
 		receivedKey = null;
 	}
 
-	public ECDH(PublicKey key) {
+	public ECDH(DHMessage key) {
 		corps = key.corps;
 		P = key.P;
 
@@ -52,21 +50,23 @@ public class ECDH {
 		receivedKey = key;
 	}
 	
-	private Point getPublicPoint(){
+	protected Point getPublicPoint(){
 		return corps.mutiply(d, P);
 	}
 
-	public PublicKey getPublicKey() {
-		return new PublicKey(P, corps, getPublicPoint());
+	public DHMessage getPublicKey() {
+		return new DHMessage(P, corps, getPublicPoint());
 	}
 
-	public void setReceivedKey(PublicKey key) throws Exception {
+	public void setReceivedKey(DHMessage key) throws Exception {
 		if (!corps.equals(key.corps) || !P.equals(key.P))
 			throw new Exception("Wrong curve parameters");
 		receivedKey = key;
 	}
 
-	public Point getCommonSecret() {
+	public Point getCommonSecret() throws Exception {
+		if (receivedKey == null)
+			throw new Exception("ReceivedKey non initialised");
 		return corps.mutiply(d, receivedKey.key);
 	}
 }

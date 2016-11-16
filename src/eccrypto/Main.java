@@ -3,7 +3,9 @@ package eccrypto;
 import java.math.BigInteger;
 
 import eccrypto.ecdh.ECDH;
-import eccrypto.ecdh.PublicKey;
+import eccrypto.elgamal.ElMessage;
+import eccrypto.elgamal.Elgamal;
+import eccrypto.ecdh.DHMessage;
 import eccrypto.math.Corps;
 import eccrypto.math.EllipticCurve;
 import eccrypto.math.Point;
@@ -64,37 +66,55 @@ public class Main {
 
 		System.out.println("\n --- ECDH --- ");
 		ECDH alice = new ECDH();
-		PublicKey pa = alice.getPublicKey();
+		DHMessage pa = alice.getPublicKey();
 		System.out.println("Alice key : \n" + pa);
 
 		ECDH bob = new ECDH();
-		PublicKey pb = bob.getPublicKey();
+		DHMessage pb = bob.getPublicKey();
 		System.out.println("Bob key : \n" + pb);
 
 		try {
 			alice.setReceivedKey(pb);
 			bob.setReceivedKey(pa);
-		} catch (Exception e) {
-			e.printStackTrace();
+			
+			System.out.println("Alice secret : \n" + alice.getCommonSecret());
+			System.out.println("Bob secret : \n" + bob.getCommonSecret());
+			System.out.println("equals alice secret ? \t" + alice.getCommonSecret().equals(bob.getCommonSecret()));
+
+			System.out.println("Bob2 in passive mode");
+			ECDH bob2 = new ECDH(pa);
+			DHMessage pb2 = bob2.getPublicKey();
+			System.out.println("Bob2 key : \n" + pb2);
+			
+			try {
+				alice.setReceivedKey(pb2);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			System.out.println("Bob2 secret : \n" + bob.getCommonSecret());
+			System.out.println("equals alice secret ? \t" + alice.getCommonSecret().equals(bob2.getCommonSecret()));
+		} catch (Exception e1) {
+			e1.printStackTrace();
 		}
-
-		System.out.println("Alice secret : \n" + alice.getCommonSecret());
-		System.out.println("Bob secret : \n" + bob.getCommonSecret());
-		System.out.println("equals alice secret ? \t" + alice.getCommonSecret().equals(bob.getCommonSecret()));
-
-		System.out.println("Bob2 in passive mode");
-		ECDH bob2 = new ECDH(pa);
-		PublicKey pb2 = bob2.getPublicKey();
-		System.out.println("Bob2 key : \n" + pb2);
 		
+		System.out.println("\n --- ElGamal --- ");
 		try {
-			alice.setReceivedKey(pb2);
+			BigInteger m = new BigInteger("8884933102832021670310856601112383279507496491807071433260928721853918699951");
+			
+			// Key generation
+			Elgamal alice2 = new Elgamal();
+			DHMessage pubAlice = alice2.getPublicKey();
+			
+			// Encryption
+			Elgamal bob2 = new Elgamal();
+			ElMessage cypher = bob2.getCypher(pubAlice, m);
+			
+			// Decryption
+			System.out.println("bob m equals alice m ? \t" + alice2.uncypher(cypher).equals(m));
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
-
-		System.out.println("Bob2 secret : \n" + bob.getCommonSecret());
-		System.out.println("equals alice secret ? \t" + alice.getCommonSecret().equals(bob2.getCommonSecret()));
+		}	
 	}
 
 }
