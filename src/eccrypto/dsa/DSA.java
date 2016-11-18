@@ -1,8 +1,11 @@
 package eccrypto.dsa;
 
 import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
+import eccrypto.ecdh.DHMessage;
 import eccrypto.ecdh.ECDH;
 import eccrypto.math.Point;
 
@@ -21,30 +24,58 @@ public class DSA extends ECDH {
 			throw new IllegalArgumentException("Message out of bounds");
 
 		// calculer sign
-		Point sign = new Point();
+		Point sign = new Point(BigInteger.ZERO, BigInteger.ZERO);
 
 		SecureRandom randomGenerator = new SecureRandom();
-		BigInteger x = BigInteger.ZERO;
-		BigInteger y = BigInteger.ZERO;
-		while (y.equals(BigInteger.ZERO)) {
+		while (sign.y.equals(BigInteger.ZERO)) {
 			BigInteger k = null;
-			while (x.equals(BigInteger.ZERO)) {
+			while (sign.x.equals(BigInteger.ZERO) || sign.isInfinit) {
 				k = new BigInteger(256, randomGenerator);
+				k = k.mod(corps.getN());
 				Point A = corps.mutiply(k, P);
-				x = A.x;
+				sign.x = A.x.mod(corps.getN());
 			}
-			y = k.modInverse(corps.getP()).multiply(m.add(d.multiply(x)));
+			sign.y = k.modInverse(corps.getN()).multiply(hash(m).add(d.multiply(sign.x))).mod(corps.getN());
 		}
-		
-		sign.x = x;
-		sign.y = y;
 
 		return new DSAMessage(getPublicKey(), m, sign);
 	}
 
-	public BigInteger verify(DSAMessage cypher) throws Exception {
-		setReceivedKey(cypher);
-		
-		return null;
+	public boolean verify(DHMessage senderKey, DSAMessage msg) throws Exception {
+		setReceivedKey(msg);
+
+		BigInteger n = corps.getN();
+
+		if (msg.key.isInfinit)
+			throw new Exception("key is infinit");
+		if (!corps.contain(msg.key))
+			throw new Exception("wrong key, not in corps");
+		if (!corps.mutiply(n, msg.key).isInfinit)
+			throw new Exception("wrong key, n*key != infinit");
+		if (!msg.sign.isInRangeZeroTo(n))
+			throw new Exception("wrong key, out of range");
+		if (!senderKey.equals(msg))
+			throw new Exception("wrong publicKey");
+
+		BigInteger w = msg.sign.y.modInverse(n).mod(n);
+		BigInteger u1 = hash(msg.m).multiply(w).mod(n);
+		BigInteger u2 = msg.sign.x.multiply(w).mod(n);
+		Point X = corps.add(corps.mutiply(u1, P), corps.mutiply(u2, msg.key));
+
+		System.out.println(X);
+
+		return msg.sign.x.equals(X.x.mod(corps.getP()));
+	}
+
+	private BigInteger hash(BigInteger m) {
+		try {
+			MessageDigest md = MessageDigest.getInstance("SHA-256");
+			md.update(m.toByteArray());
+			byte[] hash = md.digest();
+			return new BigInteger(hash);
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 }

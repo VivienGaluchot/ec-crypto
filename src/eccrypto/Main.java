@@ -5,6 +5,8 @@ import java.math.BigInteger;
 import eccrypto.ecdh.ECDH;
 import eccrypto.elgamal.ElMessage;
 import eccrypto.elgamal.Elgamal;
+import eccrypto.dsa.DSA;
+import eccrypto.dsa.DSAMessage;
 import eccrypto.ecdh.DHMessage;
 import eccrypto.math.Corps;
 import eccrypto.math.EllipticCurve;
@@ -76,7 +78,7 @@ public class Main {
 		try {
 			alice.setReceivedKey(pb);
 			bob.setReceivedKey(pa);
-			
+
 			System.out.println("Alice secret : \n" + alice.getCommonSecret());
 			System.out.println("Bob secret : \n" + bob.getCommonSecret());
 			System.out.println("equals alice secret ? \t" + alice.getCommonSecret().equals(bob.getCommonSecret()));
@@ -85,7 +87,7 @@ public class Main {
 			ECDH bob2 = new ECDH(pa);
 			DHMessage pb2 = bob2.getPublicKey();
 			System.out.println("Bob2 key : \n" + pb2);
-			
+
 			try {
 				alice.setReceivedKey(pb2);
 			} catch (Exception e) {
@@ -97,24 +99,39 @@ public class Main {
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
-		
+
+		BigInteger m = new BigInteger("7896542365786324486235");
+
 		System.out.println("\n --- ElGamal --- ");
 		try {
-			BigInteger m = new BigInteger("8884933102832021670310856601112383279507496491807071433260928721853918699951");
-			
+
 			// Key generation
 			Elgamal alice2 = new Elgamal();
 			DHMessage pubAlice = alice2.getPublicKey();
-			
+
 			// Encryption
 			Elgamal bob2 = new Elgamal();
 			ElMessage cypher = bob2.getCypher(pubAlice, m);
-			
+
 			// Decryption
 			System.out.println("bob m equals alice m ? \t" + alice2.uncypher(cypher).equals(m));
 		} catch (Exception e) {
 			e.printStackTrace();
-		}	
+		}
+
+		System.out.println("\n --- DSA --- ");
+		DSA alice3 = new DSA();
+		DHMessage alicePubKey = alice3.getPublicKey();
+		DSA bob3 = new DSA();
+		DSA jack = new DSA();
+		DHMessage jackPubKey = jack.getPublicKey();
+		try {
+			DSAMessage sign = alice3.sign(m);
+			System.out.println("bob verify alice's signature ? \t" + bob3.verify(alicePubKey, sign));
+			System.out.println("bob verify alice signature ? \t" + bob3.verify(jackPubKey, sign));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 }

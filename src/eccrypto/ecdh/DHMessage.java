@@ -22,4 +22,13 @@ public class DHMessage implements Serializable {
 	public String toString() {
 		return key.toString();
 	}
+	
+	@Override
+	public boolean equals(Object m){
+		if(m instanceof DHMessage){
+			DHMessage msg = (DHMessage) m;
+			return P.equals(msg.P) && corps.equals(msg.corps) && key.equals(msg.key);
+		}
+		return false;
+	}
 }

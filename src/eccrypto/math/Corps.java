@@ -19,6 +19,10 @@ public class Corps {
 	public BigInteger getP(){
 		return p;
 	}
+	
+	public BigInteger getN(){
+		return n;
+	}
 
 	public Point oppose(Point point) {
 		if (point.isInfinit)
