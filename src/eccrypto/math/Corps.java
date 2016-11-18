@@ -1,8 +1,11 @@
 package eccrypto.math;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 
-public class Corps {
+public class Corps implements Serializable{
+	private static final long serialVersionUID = 1L;
+
 	private BigInteger p;
 	private BigInteger n;
 	private EllipticCurve curve;

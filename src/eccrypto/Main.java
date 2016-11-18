@@ -122,16 +122,21 @@ public class Main {
 		System.out.println("\n --- DSA --- ");
 		DSA alice3 = new DSA();
 		DHMessage alicePubKey = alice3.getPublicKey();
+		String str = SerializationUtil.serialize(alicePubKey);
+		alicePubKey = (DHMessage) SerializationUtil.deserialize(str);
+		
 		DSA bob3 = new DSA();
 		DSA jack = new DSA();
 		DHMessage jackPubKey = jack.getPublicKey();
 		try {
-			DSAMessage sign = alice3.sign(m);
-			System.out.println("bob verify alice's signature ? \t" + bob3.verify(alicePubKey, sign));
-			System.out.println("bob verify alice signature ? \t" + bob3.verify(jackPubKey, sign));
+			DSAMessage signedMsg = alice3.sign(m);
+			System.out.println("bob verify alice's signature ? \t" + bob3.verify(alicePubKey, signedMsg));
+			System.out.println("bob verify alice signature ? \t" + bob3.verify(jackPubKey, signedMsg));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		System.out.println(SerializationUtil.serialize(alicePubKey));
 	}
 
 }

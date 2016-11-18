@@ -1,5 +1,6 @@
 package eccrypto.math;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 
 /**
@@ -7,7 +8,9 @@ import java.math.BigInteger;
  * 
  * @author Vivien
  */
-public class Point {
+public class Point implements Serializable{
+	private static final long serialVersionUID = 1L;
+	
 	public BigInteger x;
 	public BigInteger y;
 	public boolean isInfinit;

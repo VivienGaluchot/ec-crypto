@@ -1,5 +1,6 @@
 package eccrypto.math;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 
 /**
@@ -7,7 +8,9 @@ import java.math.BigInteger;
  * 
  * @author Vivien
  */
-public class EllipticCurve {
+public class EllipticCurve implements Serializable{
+	private static final long serialVersionUID = 1L;
+	
 	public BigInteger a1;
 	public BigInteger a2;
 	public BigInteger a3;
