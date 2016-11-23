@@ -37,22 +37,24 @@ public class ECDH {
 		corps = new Corps(p, n, curve);
 		P = new Point(gx, gy);
 
-		SecureRandom randomGenerator = new SecureRandom();
-		d = new BigInteger(256, randomGenerator);
+		generatePrivateKey();
 		receivedKey = null;
 	}
 	
 	public ECDH(CurveMessage curve){
 		corps = curve.corps;
 		P = curve.P;
+		generatePrivateKey();
 	}
 
 	public ECDH(DHMessage key) {
 		this((CurveMessage) key);
-
+		receivedKey = key;
+	}
+	
+	private void generatePrivateKey(){
 		SecureRandom randomGenerator = new SecureRandom();
 		d = new BigInteger(256, randomGenerator);
-		receivedKey = key;
 	}
 	
 	protected Point getPublicPoint(){

@@ -81,23 +81,19 @@ public class Main {
 		try {
 			alice.setReceivedKey(pb);
 			bob.setReceivedKey(pa);
-
-			System.out.println("Alice secret : \n" + alice.getCommonSecret());
-			System.out.println("Bob secret : \n" + bob.getCommonSecret());
+			
 			System.out.println("equals alice secret ? \t" + alice.getCommonSecret().equals(bob.getCommonSecret()));
 
 			System.out.println("Bob2 in passive mode");
 			ECDH bob2 = new ECDH(pa);
 			DHMessage pb2 = bob2.getPublicKey();
-			System.out.println("Bob2 key : \n" + pb2);
 
 			try {
 				alice.setReceivedKey(pb2);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-
-			System.out.println("Bob2 secret : \n" + bob.getCommonSecret());
+			
 			System.out.println("equals alice secret ? \t" + alice.getCommonSecret().equals(bob2.getCommonSecret()));
 		} catch (Exception e1) {
 			e1.printStackTrace();
@@ -147,7 +143,7 @@ public class Main {
 		
 		System.out.println("\n --- STS --- ");
 		DSAPrivateKey alicePrivKey = DSA.generatePrivateKey();
-		STS aliceSts = new STS(aliceKey);
+		STS aliceSts = new STS(alicePrivKey);
 		
 
 		DSAPrivateKey bobPrivKey = DSA.generatePrivateKey();

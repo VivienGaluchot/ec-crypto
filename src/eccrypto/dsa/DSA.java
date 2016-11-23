@@ -36,9 +36,6 @@ public class DSA extends ECDH {
 	}
 
 	public DSAMessage sign(BigInteger m) throws Exception {
-		if (m.compareTo(corps.getP()) > 0 || m.compareTo(BigInteger.ZERO) < 0)
-			throw new IllegalArgumentException("Message out of bounds");
-
 		// calculer sign
 		Point sign = new Point(BigInteger.ZERO, BigInteger.ZERO);
 
@@ -77,8 +74,6 @@ public class DSA extends ECDH {
 		BigInteger u1 = hash(msg.m).multiply(w).mod(n);
 		BigInteger u2 = msg.sign.x.multiply(w).mod(n);
 		Point X = corps.add(corps.mutiply(u1, P), corps.mutiply(u2, msg.key));
-
-		System.out.println(X);
 
 		return msg.sign.x.equals(X.x.mod(corps.getP()));
 	}
