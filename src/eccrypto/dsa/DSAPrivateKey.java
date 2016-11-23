@@ -1,23 +1,19 @@
-package eccrypto.ecdh;
+package eccrypto.dsa;
 
-import java.io.Serializable;
+import java.math.BigInteger;
 
+import eccrypto.ecdh.DHMessage;
 import eccrypto.math.Corps;
 import eccrypto.math.CurveMessage;
 import eccrypto.math.Point;
 
-public class DHMessage extends CurveMessage implements Serializable {
+public class DSAPrivateKey extends CurveMessage {
 	private static final long serialVersionUID = 1L;
+	public BigInteger key;
 
-	public Point key;
-
-	public DHMessage(Point P, Corps corps, Point key) {
+	public DSAPrivateKey(Point P, Corps corps, BigInteger key) {
 		super(P, corps);
 		this.key = key;
-	}
-
-	public String toString() {
-		return key.toString();
 	}
 	
 	@Override

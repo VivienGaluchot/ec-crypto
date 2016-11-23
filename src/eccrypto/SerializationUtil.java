@@ -32,4 +32,28 @@ public class SerializationUtil {
 			return null;
 		}
 	}
+	
+	public static Object deserialize(byte[] bytes) {
+		try {
+			ByteArrayInputStream bi = new ByteArrayInputStream(bytes);
+			ObjectInputStream si = new ObjectInputStream(bi);
+			return si.readObject();
+		} catch (Exception e) {
+			System.out.println(e);
+			return null;
+		}
+	}
+	
+	public static byte[] serializeToByte(Object obj) {
+		try {
+			ByteArrayOutputStream bo = new ByteArrayOutputStream();
+			ObjectOutputStream so = new ObjectOutputStream(bo);
+			so.writeObject(obj);
+			so.flush();
+			return bo.toByteArray();
+		} catch (Exception e) {
+			System.out.println(e);
+			return null;
+		}
+	}
 }

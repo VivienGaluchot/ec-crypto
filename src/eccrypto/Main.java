@@ -7,10 +7,13 @@ import eccrypto.elgamal.ElMessage;
 import eccrypto.elgamal.Elgamal;
 import eccrypto.dsa.DSA;
 import eccrypto.dsa.DSAMessage;
+import eccrypto.dsa.DSAPrivateKey;
 import eccrypto.ecdh.DHMessage;
 import eccrypto.math.Corps;
 import eccrypto.math.EllipticCurve;
 import eccrypto.math.Point;
+import eccrypto.sts.STS;
+import eccrypto.sts.STSMessage;
 
 public class Main {
 
@@ -120,8 +123,12 @@ public class Main {
 		}
 
 		System.out.println("\n --- DSA --- ");
-		DSA alice3 = new DSA();
+		DSAPrivateKey aliceKey = DSA.generatePrivateKey();
+		DSA alice3 = new DSA(aliceKey);
 		DHMessage alicePubKey = alice3.getPublicKey();
+		// future alice
+		DSA alice4 = new DSA(aliceKey);
+		
 		String str = SerializationUtil.serialize(alicePubKey);
 		alicePubKey = (DHMessage) SerializationUtil.deserialize(str);
 		
@@ -130,13 +137,35 @@ public class Main {
 		DHMessage jackPubKey = jack.getPublicKey();
 		try {
 			DSAMessage signedMsg = alice3.sign(m);
+			DSAMessage signedMsg2 = alice4.sign(m);
 			System.out.println("bob verify alice's signature ? \t" + bob3.verify(alicePubKey, signedMsg));
+			System.out.println("bob verify future alice's signature ? \t" + bob3.verify(alicePubKey, signedMsg2));
 			System.out.println("bob verify alice signature ? \t" + bob3.verify(jackPubKey, signedMsg));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
-		System.out.println(SerializationUtil.serialize(alicePubKey));
+		System.out.println("\n --- STS --- ");
+		DSAPrivateKey alicePrivKey = DSA.generatePrivateKey();
+		STS aliceSts = new STS(aliceKey);
+		
+
+		DSAPrivateKey bobPrivKey = DSA.generatePrivateKey();
+		STS bobSts = new STS(bobPrivKey);
+		
+		DHMessage aliceStsPubKey = aliceSts.getPublicKey();
+		DHMessage bobStsPubKey = bobSts.getPublicKey();
+		// alice -> bob : aliceStsPubKey
+		try {
+			STSMessage bobStsMessage = bobSts.getSTSMessage(aliceStsPubKey);
+			STSMessage aliceStsMessage = aliceSts.getSTSMessage(bobStsMessage);
+			
+			System.out.println(bobSts.verifySTSMessage(aliceStsPubKey, aliceStsMessage));
+			System.out.println(aliceSts.verifySTSMessage(bobStsPubKey, bobStsMessage));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 	}
 
 }

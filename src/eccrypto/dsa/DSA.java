@@ -10,13 +10,29 @@ import eccrypto.ecdh.ECDH;
 import eccrypto.math.Point;
 
 public class DSA extends ECDH {
-
-	public DSA() {
+	
+	public static DSAPrivateKey generatePrivateKey(){
+		DSA dsa = new DSA();
+		return new DSAPrivateKey(dsa.P, dsa.corps, dsa.d);
+	}
+	
+	public DSA(){
 		super();
 	}
 
-	public DSA(DSAMessage key) {
-		super(key);
+	public DSA(DSAPrivateKey key) {
+		super();
+		setPrivateKey(key);
+	}
+
+	public DSAPrivateKey getPrivateKey() {
+		return new DSAPrivateKey(P, corps, d);
+	}
+
+	private void setPrivateKey(DSAPrivateKey key) {
+		this.d = key.key;
+		this.corps = key.corps;
+		this.P = key.P;
 	}
 
 	public DSAMessage sign(BigInteger m) throws Exception {

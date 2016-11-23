@@ -7,8 +7,9 @@ import eccrypto.math.Point;
 
 public class DSAMessage extends DHMessage{
 	static final long serialVersionUID = 1L;
-	BigInteger m;
-	Point sign;
+	
+	public BigInteger m;
+	public Point sign;
 	
 	public DSAMessage(DHMessage dh, BigInteger m, Point sign){
 		super(dh.P, dh.corps, dh.key);

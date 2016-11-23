@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.security.SecureRandom;
 
 import eccrypto.math.Corps;
+import eccrypto.math.CurveMessage;
 import eccrypto.math.EllipticCurve;
 import eccrypto.math.Point;
 
@@ -40,10 +41,14 @@ public class ECDH {
 		d = new BigInteger(256, randomGenerator);
 		receivedKey = null;
 	}
+	
+	public ECDH(CurveMessage curve){
+		corps = curve.corps;
+		P = curve.P;
+	}
 
 	public ECDH(DHMessage key) {
-		corps = key.corps;
-		P = key.P;
+		this((CurveMessage) key);
 
 		SecureRandom randomGenerator = new SecureRandom();
 		d = new BigInteger(256, randomGenerator);
