@@ -40,8 +40,8 @@ public class ECDH {
 		generatePrivateKey();
 		receivedKey = null;
 	}
-	
-	public ECDH(CurveMessage curve){
+
+	public ECDH(CurveMessage curve) {
 		corps = curve.corps;
 		P = curve.P;
 		generatePrivateKey();
@@ -51,13 +51,15 @@ public class ECDH {
 		this((CurveMessage) key);
 		receivedKey = key;
 	}
-	
-	private void generatePrivateKey(){
+
+	private void generatePrivateKey() {
 		SecureRandom randomGenerator = new SecureRandom();
-		d = new BigInteger(256, randomGenerator);
+		do {
+			d = new BigInteger(256, randomGenerator);
+		} while (d.equals(BigInteger.ZERO) || getPublicPoint().isInfinit);
 	}
-	
-	protected Point getPublicPoint(){
+
+	protected Point getPublicPoint() {
 		return corps.mutiply(d, P);
 	}
 

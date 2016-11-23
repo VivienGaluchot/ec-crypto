@@ -8,9 +8,9 @@ import java.math.BigInteger;
  * 
  * @author Vivien
  */
-public class EllipticCurve implements Serializable{
+public class EllipticCurve implements Serializable {
 	private static final long serialVersionUID = 1L;
-	
+
 	public BigInteger a1;
 	public BigInteger a2;
 	public BigInteger a3;

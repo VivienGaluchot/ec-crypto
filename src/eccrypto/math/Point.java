@@ -1,16 +1,16 @@
 package eccrypto.math;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigInteger;
 
 /**
  * Elliptic Curve point
  * 
- * @author Vivien
  */
-public class Point implements Serializable{
+public class Point implements Serializable {
 	private static final long serialVersionUID = 1L;
-	
+
 	public BigInteger x;
 	public BigInteger y;
 	public boolean isInfinit;
@@ -48,5 +48,21 @@ public class Point implements Serializable{
 	public boolean isInRangeZeroTo(BigInteger n) {
 		return x.compareTo(BigInteger.ZERO) > 0 && x.compareTo(n) < 0 && y.compareTo(BigInteger.ZERO) > 0
 				&& y.compareTo(n) < 0;
+	}
+	
+	private void writeObject(java.io.ObjectOutputStream out) throws IOException {
+		out.writeBoolean(isInfinit);
+		if (!isInfinit) {
+			out.writeObject(x);
+			out.writeObject(y);
+		}
+	}
+
+	private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+		isInfinit = in.readBoolean();
+		if (!isInfinit) {
+			x = (BigInteger) in.readObject();
+			y = (BigInteger) in.readObject();
+		}
 	}
 }

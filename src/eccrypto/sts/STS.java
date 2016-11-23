@@ -2,6 +2,7 @@ package eccrypto.sts;
 
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
@@ -31,6 +32,10 @@ public class STS {
 		}
 	}
 
+	public DHMessage getDSAPublicKey() {
+		return dsa.getPublicKey();
+	}
+
 	public DHMessage getPublicKey() {
 		return ecdh.getPublicKey();
 	}
@@ -50,13 +55,16 @@ public class STS {
 
 		DSAMessage sign = dsa.sign(concat);
 
-		byte[] iv = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+		SecureRandom randomGenerator = new SecureRandom();
+		byte[] iv = new byte[16];
+		randomGenerator.nextBytes(iv);
 		IvParameterSpec ivspec = new IvParameterSpec(iv);
 		SecretKeySpec skeySpec = new SecretKeySpec(ecdh.getCommonSecret().x.toByteArray(), "AES");
 		cipher.init(Cipher.ENCRYPT_MODE, skeySpec, ivspec);
 
 		byte[] encrypted = cipher.doFinal(SerializationUtil.serializeToByte(sign.sign));
-		return new STSMessage(ecdh.getPublicKey(), encrypted);
+		return new STSMessage(ecdh.getPublicKey(), encrypted, iv);
 	}
 
 	public boolean verifySTSMessage(DHMessage pairDsaKey, STSMessage msg) throws Exception {
@@ -68,16 +76,15 @@ public class STS {
 		BigInteger concat = myKey.x.or(myKey.y.shiftLeft(myKey.x.bitCount()));
 		BigInteger concat2 = pairKey.x.or(pairKey.y.shiftLeft(pairKey.x.bitCount()));
 		concat = concat2.or(concat.shiftLeft(concat2.bitCount()));
-
-		byte[] iv = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-		IvParameterSpec ivspec = new IvParameterSpec(iv);
+		
+		IvParameterSpec ivspec = new IvParameterSpec(msg.iv);
 		SecretKeySpec skeySpec = new SecretKeySpec(ecdh.getCommonSecret().x.toByteArray(), "AES");
 		cipher.init(Cipher.DECRYPT_MODE, skeySpec, ivspec);
-		
+
 		byte[] signBytes = cipher.doFinal(msg.signCypher);
 		Point sign = (Point) SerializationUtil.deserialize(signBytes);
 
-		DSAMessage dsaMsg = new DSAMessage(msg, concat, sign);
+		DSAMessage dsaMsg = new DSAMessage(pairDsaKey, concat, sign);
 
 		return dsa.verify(pairDsaKey, dsaMsg);
 	}

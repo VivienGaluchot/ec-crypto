@@ -122,6 +122,5 @@ public class Corps implements Serializable{
 			return false;
 		Corps C = (Corps) o;
 		return p.equals(C.p) && curve.equals(C.curve);
-		
 	}
 }

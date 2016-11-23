@@ -81,7 +81,7 @@ public class Main {
 		try {
 			alice.setReceivedKey(pb);
 			bob.setReceivedKey(pa);
-			
+
 			System.out.println("equals alice secret ? \t" + alice.getCommonSecret().equals(bob.getCommonSecret()));
 
 			System.out.println("Bob2 in passive mode");
@@ -93,7 +93,7 @@ public class Main {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			
+
 			System.out.println("equals alice secret ? \t" + alice.getCommonSecret().equals(bob2.getCommonSecret()));
 		} catch (Exception e1) {
 			e1.printStackTrace();
@@ -124,10 +124,10 @@ public class Main {
 		DHMessage alicePubKey = alice3.getPublicKey();
 		// future alice
 		DSA alice4 = new DSA(aliceKey);
-		
+
 		String str = SerializationUtil.serialize(alicePubKey);
 		alicePubKey = (DHMessage) SerializationUtil.deserialize(str);
-		
+
 		DSA bob3 = new DSA();
 		DSA jack = new DSA();
 		DHMessage jackPubKey = jack.getPublicKey();
@@ -140,28 +140,33 @@ public class Main {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		System.out.println("\n --- STS --- ");
+		// KeyPair generation
 		DSAPrivateKey alicePrivKey = DSA.generatePrivateKey();
 		STS aliceSts = new STS(alicePrivKey);
-		
+		DHMessage aliceDsaPubKey = aliceSts.getDSAPublicKey();
 
 		DSAPrivateKey bobPrivKey = DSA.generatePrivateKey();
 		STS bobSts = new STS(bobPrivKey);
-		
-		DHMessage aliceStsPubKey = aliceSts.getPublicKey();
-		DHMessage bobStsPubKey = bobSts.getPublicKey();
-		// alice -> bob : aliceStsPubKey
+		DHMessage bobDsaPubKey = bobSts.getDSAPublicKey();
+
 		try {
+			DHMessage aliceStsPubKey = aliceSts.getPublicKey();
+			
 			STSMessage bobStsMessage = bobSts.getSTSMessage(aliceStsPubKey);
 			STSMessage aliceStsMessage = aliceSts.getSTSMessage(bobStsMessage);
-			
-			System.out.println(bobSts.verifySTSMessage(aliceStsPubKey, aliceStsMessage));
-			System.out.println(aliceSts.verifySTSMessage(bobStsPubKey, bobStsMessage));
+
+			System.out.println(
+					"bob verify alice's sts message ? " + bobSts.verifySTSMessage(aliceDsaPubKey, aliceStsMessage));
+			System.out.println(
+					"alice verify bob's sts message ? " + aliceSts.verifySTSMessage(bobDsaPubKey, bobStsMessage));
+			System.out.println(
+					"alice secret equals bob secret ? " + bobSts.getCommonSecret().equals(aliceSts.getCommonSecret()));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 }
