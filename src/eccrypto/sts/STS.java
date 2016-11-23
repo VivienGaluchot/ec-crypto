@@ -14,6 +14,7 @@ import eccrypto.dsa.DSA;
 import eccrypto.dsa.DSAMessage;
 import eccrypto.dsa.DSAPrivateKey;
 import eccrypto.ecdh.DHMessage;
+import eccrypto.ecdh.DHParam;
 import eccrypto.ecdh.ECDH;
 import eccrypto.math.Point;
 
@@ -40,14 +41,14 @@ public class STS {
 		return ecdh.getPublicKey();
 	}
 
-	public Point getCommonSecret() throws Exception {
+	public DHParam getCommonSecret() throws Exception {
 		return ecdh.getCommonSecret();
 	}
 
 	public STSMessage getSTSMessage(DHMessage pairPublicKey) throws Exception {
-		ecdh.setReceivedKey(pairPublicKey);
-		Point myKey = ecdh.getPublicKey().key;
-		Point pairKey = pairPublicKey.key;
+		ecdh.setReceivedMessage(pairPublicKey);
+		Point myKey = ecdh.getPublicKey().dhParam.P;
+		Point pairKey = pairPublicKey.dhParam.P;
 
 		BigInteger concat = myKey.x.or(myKey.y.shiftLeft(myKey.x.bitCount()));
 		BigInteger concat2 = pairKey.x.or(pairKey.y.shiftLeft(pairKey.x.bitCount()));
@@ -60,7 +61,7 @@ public class STS {
 		byte[] iv = new byte[16];
 		randomGenerator.nextBytes(iv);
 		IvParameterSpec ivspec = new IvParameterSpec(iv);
-		SecretKeySpec skeySpec = new SecretKeySpec(ecdh.getCommonSecret().x.toByteArray(), "AES");
+		SecretKeySpec skeySpec = new SecretKeySpec(ecdh.getCommonSecret().P.x.toByteArray(), "AES");
 		cipher.init(Cipher.ENCRYPT_MODE, skeySpec, ivspec);
 
 		byte[] encrypted = cipher.doFinal(SerializationUtil.serializeToByte(sign.sign));
@@ -68,17 +69,17 @@ public class STS {
 	}
 
 	public boolean verifySTSMessage(DHMessage pairDsaKey, STSMessage msg) throws Exception {
-		ecdh.setReceivedKey(msg);
+		ecdh.setReceivedMessage(msg);
 
-		Point myKey = ecdh.getPublicKey().key;
-		Point pairKey = msg.key;
+		Point myKey = ecdh.getPublicKey().dhParam.P;
+		Point pairKey = msg.dhParam.P;
 
 		BigInteger concat = myKey.x.or(myKey.y.shiftLeft(myKey.x.bitCount()));
 		BigInteger concat2 = pairKey.x.or(pairKey.y.shiftLeft(pairKey.x.bitCount()));
 		concat = concat2.or(concat.shiftLeft(concat2.bitCount()));
 		
 		IvParameterSpec ivspec = new IvParameterSpec(msg.iv);
-		SecretKeySpec skeySpec = new SecretKeySpec(ecdh.getCommonSecret().x.toByteArray(), "AES");
+		SecretKeySpec skeySpec = new SecretKeySpec(ecdh.getCommonSecret().P.x.toByteArray(), "AES");
 		cipher.init(Cipher.DECRYPT_MODE, skeySpec, ivspec);
 
 		byte[] signBytes = cipher.doFinal(msg.signCypher);

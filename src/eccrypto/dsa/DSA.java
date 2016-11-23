@@ -55,15 +55,15 @@ public class DSA extends ECDH {
 	}
 
 	public boolean verify(DHMessage senderKey, DSAMessage msg) throws Exception {
-		setReceivedKey(msg);
+		setReceivedMessage(msg);
 
 		BigInteger n = corps.getN();
 
-		if (msg.key.isInfinit)
+		if (msg.dhParam.P.isInfinit)
 			throw new Exception("key is infinit");
-		if (!corps.contain(msg.key))
+		if (!corps.contain(msg.dhParam.P))
 			throw new Exception("wrong key, not in corps");
-		if (!corps.mutiply(n, msg.key).isInfinit)
+		if (!corps.mutiply(n, msg.dhParam.P).isInfinit)
 			throw new Exception("wrong key, n*key != infinit");
 		if (!msg.sign.isInRangeZeroTo(n))
 			throw new Exception("wrong key, out of range");
@@ -73,7 +73,7 @@ public class DSA extends ECDH {
 		BigInteger w = msg.sign.y.modInverse(n).mod(n);
 		BigInteger u1 = hash(msg.m).multiply(w).mod(n);
 		BigInteger u2 = msg.sign.x.multiply(w).mod(n);
-		Point X = corps.add(corps.mutiply(u1, P), corps.mutiply(u2, msg.key));
+		Point X = corps.add(corps.mutiply(u1, P), corps.mutiply(u2, msg.dhParam.P));
 
 		return msg.sign.x.equals(X.x.mod(corps.getP()));
 	}

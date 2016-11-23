@@ -9,7 +9,7 @@ public class STSMessage extends DHMessage {
 	public byte[] iv;
 
 	public STSMessage(DHMessage dh, byte[] signCypher, byte[] iv) {
-		super(dh.P, dh.corps, dh.key);
+		super(dh.P, dh.corps, dh.dhParam);
 		this.signCypher = signCypher;
 		this.iv = iv;
 	}

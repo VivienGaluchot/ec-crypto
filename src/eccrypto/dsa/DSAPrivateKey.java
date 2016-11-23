@@ -20,7 +20,7 @@ public class DSAPrivateKey extends CurveMessage {
 	public boolean equals(Object m){
 		if(m instanceof DHMessage){
 			DHMessage msg = (DHMessage) m;
-			return super.equals(msg) && key.equals(msg.key);
+			return super.equals(msg) && key.equals(msg.dhParam);
 		}
 		return false;
 	}

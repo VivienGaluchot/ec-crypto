@@ -15,7 +15,7 @@ import eccrypto.math.Point;
 import eccrypto.sts.STS;
 import eccrypto.sts.STSMessage;
 
-public class Main {
+public class Tests {
 
 	// p=8884933102832021670310856601112383279507496491807071433260928721853918699951
 	// n=8884933102832021670310856601112383279454437918059397120004264665392731659049
@@ -79,8 +79,8 @@ public class Main {
 		System.out.println("Bob key : \n" + pb);
 
 		try {
-			alice.setReceivedKey(pb);
-			bob.setReceivedKey(pa);
+			alice.setReceivedMessage(pb);
+			bob.setReceivedMessage(pa);
 
 			System.out.println("equals alice secret ? \t" + alice.getCommonSecret().equals(bob.getCommonSecret()));
 
@@ -89,7 +89,7 @@ public class Main {
 			DHMessage pb2 = bob2.getPublicKey();
 
 			try {
-				alice.setReceivedKey(pb2);
+				alice.setReceivedMessage(pb2);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

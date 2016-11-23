@@ -23,7 +23,7 @@ public class ECDH {
 	/**
 	 * Exchange
 	 */
-	protected DHMessage receivedKey;
+	protected DHParam pairParam;
 
 	public ECDH() {
 		BigInteger p = new BigInteger("8884933102832021670310856601112383279507496491807071433260928721853918699951");
@@ -38,7 +38,7 @@ public class ECDH {
 		P = new Point(gx, gy);
 
 		generatePrivateKey();
-		receivedKey = null;
+		pairParam = null;
 	}
 
 	public ECDH(CurveMessage curve) {
@@ -47,35 +47,39 @@ public class ECDH {
 		generatePrivateKey();
 	}
 
-	public ECDH(DHMessage key) {
-		this((CurveMessage) key);
-		receivedKey = key;
+	public ECDH(DHMessage message) {
+		this((CurveMessage) message);
+		pairParam = message.dhParam;
 	}
 
 	private void generatePrivateKey() {
 		SecureRandom randomGenerator = new SecureRandom();
 		do {
 			d = new BigInteger(256, randomGenerator);
-		} while (d.equals(BigInteger.ZERO) || getPublicPoint().isInfinit);
+		} while (d.equals(BigInteger.ZERO) || getPublicPoint().P.isInfinit);
 	}
 
-	protected Point getPublicPoint() {
-		return corps.mutiply(d, P);
+	protected DHParam getPublicPoint() {
+		return new DHParam(corps.mutiply(d, P));
 	}
 
 	public DHMessage getPublicKey() {
 		return new DHMessage(P, corps, getPublicPoint());
 	}
-
-	public void setReceivedKey(DHMessage key) throws Exception {
-		if (!corps.equals(key.corps) || !P.equals(key.P))
-			throw new Exception("Wrong curve parameters");
-		receivedKey = key;
+	
+	public void setReceivedParam(DHParam p) throws Exception {
+		pairParam = p;
 	}
 
-	public Point getCommonSecret() throws Exception {
-		if (receivedKey == null)
+	public void setReceivedMessage(DHMessage key) throws Exception {
+		if (!corps.equals(key.corps) || !P.equals(key.P))
+			throw new Exception("Wrong curve parameters");
+		pairParam = key.dhParam;
+	}
+
+	public DHParam getCommonSecret() throws Exception {
+		if (pairParam == null)
 			throw new Exception("ReceivedKey non initialised");
-		return corps.mutiply(d, receivedKey.key);
+		return new DHParam(corps.mutiply(d, pairParam.P));
 	}
 }

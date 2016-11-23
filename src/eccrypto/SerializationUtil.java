@@ -7,7 +7,7 @@ import java.io.ObjectOutputStream;
 import java.util.Base64;
 
 public class SerializationUtil {
-	
+
 	public static Object deserialize(String serializedObject) {
 		try {
 			byte b[] = Base64.getDecoder().decode(serializedObject);
@@ -19,7 +19,7 @@ public class SerializationUtil {
 			return null;
 		}
 	}
-	
+
 	public static String serialize(Object obj) {
 		try {
 			ByteArrayOutputStream bo = new ByteArrayOutputStream();
@@ -32,7 +32,7 @@ public class SerializationUtil {
 			return null;
 		}
 	}
-	
+
 	public static Object deserialize(byte[] bytes) {
 		try {
 			ByteArrayInputStream bi = new ByteArrayInputStream(bytes);
@@ -43,7 +43,7 @@ public class SerializationUtil {
 			return null;
 		}
 	}
-	
+
 	public static byte[] serializeToByte(Object obj) {
 		try {
 			ByteArrayOutputStream bo = new ByteArrayOutputStream();

@@ -12,7 +12,7 @@ public class DSAMessage extends DHMessage{
 	public Point sign;
 	
 	public DSAMessage(DHMessage dh, BigInteger m, Point sign){
-		super(dh.P, dh.corps, dh.key);
+		super(dh.P, dh.corps, dh.dhParam);
 		this.m = m;
 		this.sign = sign;
 	}

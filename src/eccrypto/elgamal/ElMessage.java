@@ -8,7 +8,7 @@ public class ElMessage extends DHMessage {
 	Point m;
 	
 	public ElMessage(DHMessage m, Point cypher){
-		super(m.P, m.corps, m.key);
+		super(m.P, m.corps, m.dhParam);
 		this.m = cypher;
 	}
 }
