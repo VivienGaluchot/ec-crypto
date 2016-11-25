@@ -1,16 +1,22 @@
 package eccrypto.sts;
 
-import eccrypto.ecdh.DHMessage;
+import java.math.BigInteger;
 
-public class STSMessage extends DHMessage {
+import eccrypto.ecdh.DHParam;
+
+public class STSMessage extends DHParam {
 	static final long serialVersionUID = 1L;
 
 	public byte[] signCypher;
 	public byte[] iv;
 
-	public STSMessage(DHMessage dh, byte[] signCypher, byte[] iv) {
-		super(dh.P, dh.corps, dh.dhParam);
+	public STSMessage(DHParam dh, byte[] signCypher, byte[] iv) {
+		super(dh.P);
 		this.signCypher = signCypher;
 		this.iv = iv;
+	}
+	
+	public String toString(){
+		return new BigInteger(signCypher) + "\n" + new BigInteger(iv);
 	}
 }

@@ -12,6 +12,8 @@ import eccrypto.ecdh.ECDH;
 import eccrypto.elgamal.ElMessage;
 import eccrypto.elgamal.Elgamal;
 import eccrypto.math.Point;
+import eccrypto.sts.STS;
+import eccrypto.sts.STSMessage;
 
 public class CmdUi {
 	private static DSAPrivateKey dsaKey = null;
@@ -35,8 +37,9 @@ public class CmdUi {
 				System.out.println("4/ Generation de cle DSA");
 				System.out.println("5/ Signature DSA");
 				System.out.println("6/ Verification de signature");
-				System.out.println("7/ Echange STS");
-				System.out.println("8/ Quit");
+				System.out.println("7/ Initiateur STS");
+				System.out.println("8/ Recepteur STS");
+				System.out.println("9/ Quit");
 				System.out.print("\nVotre choix : ");
 
 				int inputNumber = 0;
@@ -51,6 +54,7 @@ public class CmdUi {
 				Point q;
 				DHParam param;
 				BigInteger i;
+				BigInteger j;
 
 				switch (inputNumber) {
 				case (1):
@@ -133,10 +137,71 @@ public class CmdUi {
 						System.out.println("Signature invalide");
 					break;
 				case (7):
-					System.out.println("-> 7/ Echange STS");
+					System.out.println("-> 7/ Initiateur STS");
+					System.out.println("Utilisation de la courbe par defaut");
+					if (dsaKey == null)
+						System.out.println("Clef privee DSA non generee");
+					else {
+						STS sts = new STS(dsaKey);
+						System.out.println("Clef publique DSA et parametre Diffie Hellman : ");
+						System.out.println(sts.getDSAPublicKey());
+						System.out.println(sts.getPublicKey());
+						System.out.println("Clef publique DSA, parametre Diffie Hellman et Message STS :");
+						p = enterPoint(input);
+						DHParam dsaPublic = new DHParam(p);
+						q = enterPoint(input);
+						DHParam dhParam = new DHParam(q);
+						i = input.nextBigInteger();
+						j = input.nextBigInteger();
+						STSMessage stsMessage = new STSMessage(dhParam, i.toByteArray(), j.toByteArray());
+						System.out.println("Message STS : ");
+						System.out.println(sts.getSTSMessage(stsMessage));
+						boolean b2;
+						try {
+							b2 = sts.verifySTSMessage(dsaPublic, stsMessage);
+						} catch (Exception e) {
+							b2 = false;
+						}
+						if (b2) {
+							System.out.println("Echange STS valide, secret commun :");
+							System.out.println(sts.getCommonSecret());
+						}
+					}
 					break;
 				case (8):
-					System.out.println("-> 8/ Quit");
+					System.out.println("-> 8/ Recepteur STS");
+					System.out.println("Utilisation de la courbe par defaut");
+					if (dsaKey == null)
+						System.out.println("Clef privee DSA non generee");
+					else {
+						STS stsR = new STS(dsaKey);
+						System.out.println("Clef publique DSA et parametre Diffie Hellman : ");
+						p = enterPoint(input);
+						DHParam dsaPublicR = new DHParam(p);
+						q = enterPoint(input);
+						DHParam dhParamR = new DHParam(q);
+						System.out.println("Clef publique DSA, parametre Diffie Hellman et Message STS :");
+						System.out.println(stsR.getDSAPublicKey());
+						System.out.println(stsR.getPublicKey());
+						System.out.println(stsR.getSTSMessage(dhParamR));
+						System.out.println("Message STS : ");
+						i = input.nextBigInteger();
+						j = input.nextBigInteger();
+						STSMessage stsMessageR = new STSMessage(dhParamR, i.toByteArray(), j.toByteArray());
+						boolean b2;
+						try {
+							b2 = stsR.verifySTSMessage(dsaPublicR, stsMessageR);
+						} catch (Exception e) {
+							b2 = false;
+						}
+						if (b2) {
+							System.out.println("Echange STS valide, secret commun :");
+							System.out.println(stsR.getCommonSecret());
+						}
+					}
+					break;
+				case (9):
+					System.out.println("-> 9/ Quit");
 					quit = true;
 					break;
 				default:

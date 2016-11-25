@@ -13,7 +13,6 @@ import eccrypto.SerializationUtil;
 import eccrypto.dsa.DSA;
 import eccrypto.dsa.DSAMessage;
 import eccrypto.dsa.DSAPrivateKey;
-import eccrypto.ecdh.DHMessage;
 import eccrypto.ecdh.DHParam;
 import eccrypto.ecdh.ECDH;
 import eccrypto.math.Point;
@@ -37,18 +36,18 @@ public class STS {
 		return dsa.getPublicParam();
 	}
 
-	public DHMessage getPublicKey() {
-		return ecdh.getDHMessage();
+	public DHParam getPublicKey() {
+		return ecdh.getPublicParam();
 	}
 
 	public DHParam getCommonSecret() throws Exception {
 		return ecdh.getCommonSecret();
 	}
 
-	public STSMessage getSTSMessage(DHMessage pairPublicKey) throws Exception {
-		ecdh.setReceivedMessage(pairPublicKey);
-		Point myKey = ecdh.getDHMessage().dhParam.P;
-		Point pairKey = pairPublicKey.dhParam.P;
+	public STSMessage getSTSMessage(DHParam pairPublicKey) throws Exception {
+		ecdh.setReceivedParam(pairPublicKey);
+		Point myKey = ecdh.getPublicParam().P;
+		Point pairKey = pairPublicKey.P;
 
 		BigInteger concat = myKey.x.or(myKey.y.shiftLeft(myKey.x.bitCount()));
 		BigInteger concat2 = pairKey.x.or(pairKey.y.shiftLeft(pairKey.x.bitCount()));
@@ -65,14 +64,14 @@ public class STS {
 		cipher.init(Cipher.ENCRYPT_MODE, skeySpec, ivspec);
 
 		byte[] encrypted = cipher.doFinal(SerializationUtil.serializeToByte(sign.sign));
-		return new STSMessage(ecdh.getDHMessage(), encrypted, iv);
+		return new STSMessage(ecdh.getPublicParam(), encrypted, iv);
 	}
 
 	public boolean verifySTSMessage(DHParam pairDsaKey, STSMessage msg) throws Exception {
-		ecdh.setReceivedMessage(msg);
+		ecdh.setReceivedParam(msg);
 
-		Point myKey = ecdh.getDHMessage().dhParam.P;
-		Point pairKey = msg.dhParam.P;
+		Point myKey = ecdh.getPublicParam().P;
+		Point pairKey = msg.P;
 
 		BigInteger concat = myKey.x.or(myKey.y.shiftLeft(myKey.x.bitCount()));
 		BigInteger concat2 = pairKey.x.or(pairKey.y.shiftLeft(pairKey.x.bitCount()));

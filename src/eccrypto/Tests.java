@@ -154,7 +154,7 @@ public class Tests {
 		DHParam bobDsaPubKey = bobSts.getDSAPublicKey();
 
 		try {
-			DHMessage aliceStsPubKey = aliceSts.getPublicKey();
+			DHParam aliceStsPubKey = aliceSts.getPublicKey();
 			
 			STSMessage bobStsMessage = bobSts.getSTSMessage(aliceStsPubKey);
 			STSMessage aliceStsMessage = aliceSts.getSTSMessage(bobStsMessage);
