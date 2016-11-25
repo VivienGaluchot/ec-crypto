@@ -112,7 +112,7 @@ public class CmdUi {
 						DSA dsa = new DSA(dsaKey);
 						System.out.println("Message (entier) : ");
 						i = input.nextBigInteger();
-						System.out.println("Clef publique, Message et signature : ");
+						System.out.println("Clef publique DSA, Message et signature : ");
 						System.out.println(dsa.getPublicParam());
 						System.out.println(dsa.sign(i));
 					}
@@ -121,7 +121,7 @@ public class CmdUi {
 					System.out.println("-> 6/ Verification de signature");
 					System.out.println("Utilisation de la courbe par defaut");
 					DSA dsaR = new DSA();
-					System.out.println("Clef publique, message et signature : ");
+					System.out.println("Clef publique DSA, message et signature : ");
 					p = enterPoint(input);
 					i = input.nextBigInteger();
 					q = enterPoint(input);
