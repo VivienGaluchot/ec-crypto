@@ -2,10 +2,9 @@ package eccrypto.elgamal;
 
 import java.math.BigInteger;
 
-import eccrypto.ecdh.DHMessage;
+import eccrypto.ecdh.DHParam;
 import eccrypto.ecdh.ECDH;
 import eccrypto.math.CurveMessage;
-import eccrypto.math.Point;
 
 public class Elgamal extends ECDH {
 
@@ -17,13 +16,9 @@ public class Elgamal extends ECDH {
 		super(m);
 	}
 
-	public Elgamal(ElMessage key) {
-		super(key);
-	}
-
-	public ElMessage getCypher(DHMessage key, BigInteger m) throws Exception {
-		Point cypher = new Point();
-		setReceivedMessage(key);
+	public ElMessage getCypher(DHParam key, BigInteger m) throws Exception {
+		BigInteger cypher;
+		setReceivedParam(key);
 
 		if (m.compareTo(corps.getP()) > 0 || m.compareTo(BigInteger.ZERO) < 0)
 			throw new IllegalArgumentException("Message out of bounds");
@@ -31,14 +26,14 @@ public class Elgamal extends ECDH {
 		if (getCommonSecret().P.isInfinit)
 			throw new Exception("CommonSecret infinit");
 
-		cypher.x = m.xor(getCommonSecret().P.x);
-		return new ElMessage(getPublicKey(), cypher);
+		cypher = m.xor(getCommonSecret().P.x);
+		return new ElMessage(getPublicParam(), cypher);
 	}
 
 	public BigInteger uncypher(ElMessage cypher) throws Exception {
-		setReceivedMessage(cypher);
+		setReceivedParam(cypher);
 
-		BigInteger m = cypher.m.x.xor(getCommonSecret().P.x);
+		BigInteger m = cypher.m.xor(getCommonSecret().P.x);
 		return m;
 	}
 }

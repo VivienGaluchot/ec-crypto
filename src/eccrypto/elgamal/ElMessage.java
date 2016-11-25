@@ -1,14 +1,19 @@
 package eccrypto.elgamal;
 
-import eccrypto.ecdh.DHMessage;
-import eccrypto.math.Point;
+import java.math.BigInteger;
 
-public class ElMessage extends DHMessage {
+import eccrypto.ecdh.DHParam;
+
+public class ElMessage extends DHParam {
 	static final long serialVersionUID = 1L;
-	Point m;
-	
-	public ElMessage(DHMessage m, Point cypher){
-		super(m.P, m.corps, m.dhParam);
+	BigInteger m;
+
+	public ElMessage(DHParam m, BigInteger cypher) {
+		super(m.P);
 		this.m = cypher;
+	}
+
+	public String toString() {
+		return P + "\n" + m;
 	}
 }

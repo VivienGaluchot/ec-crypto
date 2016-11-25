@@ -5,7 +5,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
-import eccrypto.ecdh.DHMessage;
+import eccrypto.ecdh.DHParam;
 import eccrypto.ecdh.ECDH;
 import eccrypto.math.Point;
 
@@ -51,19 +51,19 @@ public class DSA extends ECDH {
 			sign.y = k.modInverse(corps.getN()).multiply(hash(m).add(d.multiply(sign.x))).mod(corps.getN());
 		}
 
-		return new DSAMessage(getPublicKey(), m, sign);
+		return new DSAMessage(getPublicParam(), m, sign);
 	}
 
-	public boolean verify(DHMessage senderKey, DSAMessage msg) throws Exception {
-		setReceivedMessage(msg);
+	public boolean verify(DHParam senderKey, DSAMessage msg) throws Exception {
+		setReceivedParam(msg);
 
 		BigInteger n = corps.getN();
 
-		if (msg.dhParam.P.isInfinit)
+		if (msg.P.isInfinit)
 			throw new Exception("key is infinit");
-		if (!corps.contain(msg.dhParam.P))
+		if (!corps.contain(msg.P))
 			throw new Exception("wrong key, not in corps");
-		if (!corps.mutiply(n, msg.dhParam.P).isInfinit)
+		if (!corps.mutiply(n, msg.P).isInfinit)
 			throw new Exception("wrong key, n*key != infinit");
 		if (!msg.sign.isInRangeZeroTo(n))
 			throw new Exception("wrong key, out of range");
@@ -73,7 +73,7 @@ public class DSA extends ECDH {
 		BigInteger w = msg.sign.y.modInverse(n).mod(n);
 		BigInteger u1 = hash(msg.m).multiply(w).mod(n);
 		BigInteger u2 = msg.sign.x.multiply(w).mod(n);
-		Point X = corps.add(corps.mutiply(u1, P), corps.mutiply(u2, msg.dhParam.P));
+		Point X = corps.add(corps.mutiply(u1, P), corps.mutiply(u2, msg.P));
 
 		return msg.sign.x.equals(X.x.mod(corps.getP()));
 	}

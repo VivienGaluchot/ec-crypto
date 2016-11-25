@@ -9,6 +9,7 @@ import eccrypto.dsa.DSA;
 import eccrypto.dsa.DSAMessage;
 import eccrypto.dsa.DSAPrivateKey;
 import eccrypto.ecdh.DHMessage;
+import eccrypto.ecdh.DHParam;
 import eccrypto.math.Corps;
 import eccrypto.math.EllipticCurve;
 import eccrypto.math.Point;
@@ -62,6 +63,7 @@ public class Tests {
 
 		p = corps.mutiply(new BigInteger("10"), g);
 		System.out.println("10*g is in curve ? \t" + corps.contain(p));
+		System.out.println(p);
 		p = corps.mutiply(new BigInteger("10"), inf);
 		System.out.println("10*inf is in curve ? \t" + corps.contain(p));
 		p = corps.mutiply(n, g);
@@ -71,11 +73,11 @@ public class Tests {
 
 		System.out.println("\n --- ECDH --- ");
 		ECDH alice = new ECDH();
-		DHMessage pa = alice.getPublicKey();
+		DHMessage pa = alice.getDHMessage();
 		System.out.println("Alice key : \n" + pa);
 
 		ECDH bob = new ECDH();
-		DHMessage pb = bob.getPublicKey();
+		DHMessage pb = bob.getDHMessage();
 		System.out.println("Bob key : \n" + pb);
 
 		try {
@@ -86,7 +88,7 @@ public class Tests {
 
 			System.out.println("Bob2 in passive mode");
 			ECDH bob2 = new ECDH(pa);
-			DHMessage pb2 = bob2.getPublicKey();
+			DHMessage pb2 = bob2.getDHMessage();
 
 			try {
 				alice.setReceivedMessage(pb2);
@@ -106,7 +108,7 @@ public class Tests {
 
 			// Key generation
 			Elgamal alice2 = new Elgamal();
-			DHMessage pubAlice = alice2.getPublicKey();
+			DHParam pubAlice = alice2.getPublicParam();
 
 			// Encryption
 			Elgamal bob2 = new Elgamal();
@@ -121,16 +123,16 @@ public class Tests {
 		System.out.println("\n --- DSA --- ");
 		DSAPrivateKey aliceKey = DSA.generatePrivateKey();
 		DSA alice3 = new DSA(aliceKey);
-		DHMessage alicePubKey = alice3.getPublicKey();
+		DHParam alicePubKey = alice3.getPublicParam();
 		// future alice
 		DSA alice4 = new DSA(aliceKey);
 
 		String str = SerializationUtil.serialize(alicePubKey);
-		alicePubKey = (DHMessage) SerializationUtil.deserialize(str);
+		alicePubKey = (DHParam) SerializationUtil.deserialize(str);
 
 		DSA bob3 = new DSA();
 		DSA jack = new DSA();
-		DHMessage jackPubKey = jack.getPublicKey();
+		DHParam jackPubKey = jack.getPublicParam();
 		try {
 			DSAMessage signedMsg = alice3.sign(m);
 			DSAMessage signedMsg2 = alice4.sign(m);
@@ -145,11 +147,11 @@ public class Tests {
 		// KeyPair generation
 		DSAPrivateKey alicePrivKey = DSA.generatePrivateKey();
 		STS aliceSts = new STS(alicePrivKey);
-		DHMessage aliceDsaPubKey = aliceSts.getDSAPublicKey();
+		DHParam aliceDsaPubKey = aliceSts.getDSAPublicKey();
 
 		DSAPrivateKey bobPrivKey = DSA.generatePrivateKey();
 		STS bobSts = new STS(bobPrivKey);
-		DHMessage bobDsaPubKey = bobSts.getDSAPublicKey();
+		DHParam bobDsaPubKey = bobSts.getDSAPublicKey();
 
 		try {
 			DHMessage aliceStsPubKey = aliceSts.getPublicKey();

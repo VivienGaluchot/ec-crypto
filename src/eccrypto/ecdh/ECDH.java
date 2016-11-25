@@ -56,15 +56,15 @@ public class ECDH {
 		SecureRandom randomGenerator = new SecureRandom();
 		do {
 			d = new BigInteger(256, randomGenerator);
-		} while (d.equals(BigInteger.ZERO) || getPublicPoint().P.isInfinit);
+		} while (d.equals(BigInteger.ZERO) || getPublicParam().P.isInfinit);
 	}
 
-	protected DHParam getPublicPoint() {
+	public DHParam getPublicParam() {
 		return new DHParam(corps.mutiply(d, P));
 	}
 
-	public DHMessage getPublicKey() {
-		return new DHMessage(P, corps, getPublicPoint());
+	public DHMessage getDHMessage() {
+		return new DHMessage(P, corps, getPublicParam());
 	}
 	
 	public void setReceivedParam(DHParam p) throws Exception {
