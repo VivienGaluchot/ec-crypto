@@ -8,4 +8,4 @@ Cryptographie en courbe elliptiques implémenté en Java-8
 * Signature *DSA*
 * Protocole d'échange de clé *STS*
 
-Projet réalisé en collaboration avec [Vincent Hernandez](vincent.hernandez@etu.univ-amu.fr) a Polytech Marseille
+Projet réalisé en collaboration avec [Vincent Hernandez](vincent.hernandez@etu.univ-amu.fr) à Polytech Marseille
