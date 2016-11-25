@@ -32,8 +32,8 @@ public class CmdUi {
 			try {
 				System.out.println("\n--- Fonctions disponnibles ---");
 				System.out.println("1/ Echange Diffie-Hellman");
-				System.out.println("2/ Envois ElGammal");
-				System.out.println("3/ Reception ElGammal");
+				System.out.println("2/ Envois ElGamal");
+				System.out.println("3/ Reception ElGamal");
 				System.out.println("4/ Generation de cle DSA");
 				System.out.println("5/ Signature DSA");
 				System.out.println("6/ Verification de signature");
@@ -71,7 +71,7 @@ public class CmdUi {
 					System.out.println(ecdh.getCommonSecret());
 					break;
 				case (2):
-					System.out.println("-> 2/ Envois ElGammal");
+					System.out.println("-> 2/ Envois ElGamal");
 					System.out.println("Utilisation de la courbe par defaut");
 					Elgamal elgamal = new Elgamal();
 					System.out.println("Parametre du pair : ");
@@ -83,7 +83,7 @@ public class CmdUi {
 					System.out.println(elgamal.getCypher(param, i));
 					break;
 				case (3):
-					System.out.println("-> 3/ Reception ElGammal");
+					System.out.println("-> 3/ Reception ElGamal");
 					System.out.println("Utilisation de la courbe par defaut");
 					Elgamal elgamalR = new Elgamal();
 					System.out.println("Parametre a echanger au pair : ");
